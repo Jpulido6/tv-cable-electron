@@ -9,15 +9,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 function createWindow() {
-  const win = new BrowserWindow({
-    fullscreen:true,
-    autoHideMenuBar: true,
+  const win = new BrowserWindow({    
     width: 800,
     height: 600,
     webPreferences: {
       preload: join(__dirname, "preload.js"),
       nodeIntegration: true,
     },
+    icon:'./src/assets/images/logo.png'
   });
 
   win.loadURL(

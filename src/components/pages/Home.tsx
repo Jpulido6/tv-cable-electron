@@ -1,14 +1,30 @@
 
+import { GridCard } from '../common/GridCard'
+import { LatestUser } from '../common/LatestUser'
 import Tabla from '../common/Tabla'
+
 
 const Home = () => {
     return (
         <>
-            <div className="flex justify-center items-center h-full w-full ">
-                <div className="h-1/2 w-full">
-                    <div className="w-full mt-8 ">
-                        <Tabla columns={colums} row={rows} />
+            <div className="grid">
+                <div className="p-6 flex items-center justify-between">
+                    <GridCard title="Clientes activos" subtitle="24" icon="users" />
+                    <GridCard title="Pagos diarios" subtitle="24" icon="paypal" />
+                    <GridCard title="Ingresos diarios" subtitle="24" icon="credit-card" />
+                    <GridCard title="New Customers" subtitle="24" icon="users" />
+                </div>
+            </div>
+            <div className="grid grid-cols-3 gap-6">
+                <div className="col-span-2">
+                    <div className='rounded-lg border bg-card text-card-foreground shadow-sm p-4'>
+                        <Tabla />
                     </div>
+                </div>
+
+                <div className='col-span-1'>
+                    <LatestUser user={user} />
+
                 </div>
             </div>
 
@@ -18,34 +34,68 @@ const Home = () => {
 
 export default Home
 
-const colums = [
+const user = [
+    {
+        nombre: 'Carlos',
+        fechaInscripcion: new Date()
+    },
+    {
+        nombre: 'Pedro',
+        fechaInscripcion: new Date()
+    },
+    {
+        nombre: 'Maria',
+        fechaInscripcion: new Date()
+    },
+    {
+        nombre: 'Luis',
+        fechaInscripcion: new Date()
+    }
+]
+
+const columns = [
     {
         name: 'id',
-        type: 'string'
+        key: 'id'
     },
     {
         name: 'Nombres',
-        type: 'string'
+        key: 'nombres'
     },
     {
         name: 'Dirección',
-        type: 'string'
+        key: 'direccion'
     },
     {
         name: 'Email',
-        type: 'string'
+        key: 'email'
     },
     {
         name: 'Saldo',
-        type: 'string'
+        key: 'saldo'
     },
 ]
 
 const rows = [
     {
-        name: 'Carlos',
+        id: '1',
+        nombres: 'Carlos',
+        direccion: 'San Jose',
+        email: 'carlos@tv.com',
+        saldo: 100
     },
     {
-        name: 'Pedro',
+        id: '2',
+        nombres: 'Pedro',
+        direccion: 'San Jose',
+        email: 'pedro@tv.com',
+        saldo: 200
+    },
+    {
+        id: '3',
+        nombres: 'Maria',
+        direccion: 'San Jose',
+        email: 'maria@tv.com',
+        saldo: 300
     }
 ]

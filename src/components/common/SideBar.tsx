@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Sidebar } from 'primereact/sidebar';
 import { Button } from 'primereact/button';
 import { Avatar } from 'primereact/avatar';
@@ -9,32 +9,31 @@ import { StyleClass } from 'primereact/styleclass';
 import logo from "../../assets/images/logo.png"
 import { Link } from 'react-router-dom';
 
-interface Props {
-    children: React.ReactNode
+
+interface Props {    
+    handleVisible: () => void,
+    visible: boolean
 }
 
-const SideBar: React.FC<Props> = ({ children }) => {
-    const [visible, setVisible] = useState<boolean>(true);
+const SideBar: React.FC<Props> = ({  handleVisible, visible }) => {
+    
     const btnRef1 = useRef(null);
     const btnRef2 = useRef(null);
     const btnRef3 = useRef(null);
 
-
-
-
     return (
-        <div className="card flex justify-center">
+        <div className="card flex justify-content-center animate-none ">
             <Sidebar
                 visible={visible}
-                onHide={() => setVisible(false)}
+                onHide={handleVisible}
                 content={({ hide }) => (
-                    <div className="min-h-screen flex relative lg:static surface-ground">
+                    <div className=" min-h-screen flex relative lg:static surface-ground">
                         <div id="app-sidebar-2" className="surface-section h-screen block flex-shrink-0 absolute lg:static left-0 top-0 z-1 surface-border select-none" style={{ width: '300px' }}>
                             <div className="flex flex-column h-full">
                                 <div className="flex items-center justify-between px-4 pt-3 flex-shrink-0">
                                     <span className="inline-flex items-center gap-2">
                                         <Image src={logo} width='50' />
-                                        <span className="font-semibold text-2xl text-primary">
+                                        <span className=" text-2xl text-black">
                                             TV CABLE</span>
                                     </span>
                                     <Button icon="pi pi-times" className="p-button-rounded p-button-text p-button-plain" onClick={hide} />
@@ -158,14 +157,9 @@ const SideBar: React.FC<Props> = ({ children }) => {
 
                 )
                 }
-            ></Sidebar >
-            <Button icon="pi pi-chevron-right" onClick={() => setVisible(true)} />
-            <div className="flex min-h-screen ">
-                <main className="main -ml-48 flex flex-grow flex-col p-4 transition-all duration-150 ease-in md:ml-0">
-                    <div className="flex h-full justify-center items-center shadow-md">{children}</div>
-                </main>
-            </div>
+            ></Sidebar >           
         </div >
+      
     )
 }
 export default SideBar
