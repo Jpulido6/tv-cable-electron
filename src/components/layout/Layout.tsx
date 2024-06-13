@@ -8,15 +8,20 @@ interface Props {
 }
 const Layout: React.FC<Props> = ({ children }) => {
   const [visible, setVisible] = React.useState(false);
-  const handleVisible = () => setVisible(!visible);
+  const handleVisible = () => setVisible(true);
+  const handleClose = () => setVisible(false);
+  
   return (
     <div className='p-5'>
       {
-        visible && <SideBar visible={visible} handleVisible={handleVisible} />
+        visible && <SideBar handleClose={handleClose} />
       }
       <div className='flex justify-between items-center mb-2'>
-        <div className="flex items-center space-x-4" onClick={handleVisible}>
-          <Button icon="pi pi-bars" className="p-button-outlined" />
+        <div className="flex items-center space-x-4" >
+          <div onClick={handleVisible}>
+            <Button icon="pi pi-bars" className="p-button-outlined" />
+          </div>
+
           <h1 className="text-xl font-semibold">Tv cable SanJose </h1>
         </div>
         <Button icon="pi pi-ellipsis-v" className="p-button-outlined" />
@@ -24,8 +29,8 @@ const Layout: React.FC<Props> = ({ children }) => {
       </div>
       {children}
       <div>
-        <Footer/>
-      </div>
+        <Footer />
+      </div>      
     </div>
   )
 }

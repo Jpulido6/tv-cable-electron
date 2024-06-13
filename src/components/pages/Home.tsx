@@ -35,19 +35,23 @@ const Home = () => {
 export default Home
 
 const user = [
-    {
+    {   
+        id: 1,
         nombre: 'Carlos',
         fechaInscripcion: new Date()
     },
     {
+        id: 2,
         nombre: 'Pedro',
         fechaInscripcion: new Date()
     },
     {
+        id: 3,
         nombre: 'Maria',
         fechaInscripcion: new Date()
     },
     {
+        id: 4,
         nombre: 'Luis',
         fechaInscripcion: new Date()
     }

@@ -1,166 +1,175 @@
 
-import React, { useRef } from 'react';
-import { Sidebar } from 'primereact/sidebar';
-import { Button } from 'primereact/button';
-import { Avatar } from 'primereact/avatar';
-import { Image } from 'primereact/image';
-import { Ripple } from 'primereact/ripple';
-import { StyleClass } from 'primereact/styleclass';
-import logo from "../../assets/images/logo.png"
+import { Accordion, AccordionItem, Button, Image } from '@nextui-org/react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
+import logo from '../../assets/images/logo.png'
 
-interface Props {    
-    handleVisible: () => void,
-    visible: boolean
+
+interface Props {
+    handleClose: () => void,
 }
 
-const SideBar: React.FC<Props> = ({  handleVisible, visible }) => {
-    
-    const btnRef1 = useRef(null);
-    const btnRef2 = useRef(null);
-    const btnRef3 = useRef(null);
+const SideBar: React.FC<Props> = ({ handleClose }) => {
+
+    const itemClasses = {
+        base: "py-0 w-full",
+        title: "font-normal text-medium",
+        trigger: "px-2 py-0 data-[hover=true]:bg-gray-200 rounded-lg h-10 flex items-center",
+        indicator: "text-medium",
+        content: "text-small px-2",
+    };
 
     return (
-        <div className="card flex justify-content-center animate-none ">
-            <Sidebar
-                visible={visible}
-                onHide={handleVisible}
-                content={({ hide }) => (
-                    <div className=" min-h-screen flex relative lg:static surface-ground">
-                        <div id="app-sidebar-2" className="surface-section h-screen block flex-shrink-0 absolute lg:static left-0 top-0 z-1 surface-border select-none" style={{ width: '300px' }}>
-                            <div className="flex flex-column h-full">
-                                <div className="flex items-center justify-between px-4 pt-3 flex-shrink-0">
-                                    <span className="inline-flex items-center gap-2">
-                                        <Image src={logo} width='50' />
-                                        <span className=" text-2xl text-black">
-                                            TV CABLE</span>
-                                    </span>
-                                    <Button icon="pi pi-times" className="p-button-rounded p-button-text p-button-plain" onClick={hide} />
+        <div className="fixed w-2/3  top-0 left-0 z-40 transition-transform h-screen  ">
+            <div className="hidden w-1/3 bg-gray-100 p-6 dark:bg-gray-950 md:block h-screen ">
+                <div className="flex items-center justify-between gap-2">
+                    <Image src={logo} alt="logo" width="40" height="30" />
+                    <span className="flex items-center text-center text-lg font-bold">TV CABLE SANJOSE</span>
+                    <Button isIconOnly aria-label="Like" className="flex-shrink-0" onClick={handleClose}>
+                        <i className="pi pi-times "></i>
+                    </Button>
+                </div>
+                <nav className="mt-8 space-y-4">
+                    <div>
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Menu</h3>
 
-                                </div>
-                                <div className="flex-grow-1 overflow-y-auto">
-                                    <ul className="list-none p-3 m-0">
-                                        <li>
+                        <div className="mt-4 space-y-1">
+                            <Link
+                                to={"/inicio"}
+                                className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
 
-                                            <ul className="list-none p-0 m-0 overflow-hidden">
-                                                <Link to={"/inicio"} >
-                                                    <a className="p-ripple flex items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                        <i className="pi pi-home mr-2"></i>
-                                                        <span className="font-medium">Inicio</span>
-                                                        <Ripple />
-                                                    </a>
-                                                </Link>
-                                                <li>
-                                                    <Link to={"/pagos"} className="p-ripple flex items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                        <i className="pi pi-dollar mr-2"></i>
-                                                        <span className="font-medium">Pagos</span>
-                                                        <Ripple />
-                                                    </Link>
-                                                </li>
-                                                <li>
-                                                    <StyleClass nodeRef={btnRef1} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
-                                                        <a ref={btnRef1} className="p-ripple flex items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                            <i className="pi pi-chart-line mr-2"></i>
-                                                            <span className="font-medium">Facturas</span>
-                                                            <i className="pi pi-chevron-down ml-auto mr-1"></i>
-                                                            <Ripple />
-                                                        </a>
-                                                    </StyleClass>
-                                                    <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                            >
+                                <i className="pi pi-home h-5 w-5" />
+                                Inicio
+                            </Link>
+                            <div className="mt-4 space-y-1">
+                                <Link
+                                    to={"/pagos"}
+                                    className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
 
-                                                        <li>
-                                                            <a className="p-ripple flex items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className="pi pi-pencil mr-2"></i>
-                                                                <span className="font-medium">Generar facturas</span>
-                                                                <Ripple />
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className="pi pi-search mr-2"></i>
-                                                                <span className="font-medium">Buscar facturas</span>
-                                                                <Ripple />
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <StyleClass nodeRef={btnRef2} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
-                                                        <a ref={btnRef2} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                            <i className="pi pi-money-bill mr-2"></i>
-                                                            <span className="font-medium">Gastos</span>
-                                                            <i className="pi pi-chevron-down ml-auto mr-1"></i>
-                                                            <Ripple />
-                                                        </a>
-                                                    </StyleClass>
-                                                    <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-
-                                                        <li>
-                                                            <a className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className="pi pi-folder mr-2"></i>
-                                                                <span className="font-medium">Registrar gastos</span>
-                                                                <Ripple />
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className="pi pi-search mr-2"></i>
-                                                                <span className="font-medium">Buscar gastos</span>
-                                                                <Ripple />
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <StyleClass nodeRef={btnRef3} selector="@next" enterClassName="hidden" enterActiveClassName="slidedown" leaveToClassName="hidden" leaveActiveClassName="slideup">
-                                                        <a ref={btnRef3} className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                            <i className="pi pi-book mr-2"></i>
-                                                            <span className="font-medium">Listado usuarios</span>
-                                                            <i className="pi pi-chevron-down ml-auto mr-1"></i>
-                                                            <Ripple />
-                                                        </a>
-                                                    </StyleClass>
-                                                    <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-
-                                                        <li>
-                                                            <a className="p-ripple flex items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className="pi pi-users mr-2"></i>
-                                                                <span className="font-medium">Listado San Jose</span>
-                                                                <Ripple />
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a className="p-ripple flex items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className="pi pi-users mr-2"></i>
-                                                                <span className="font-medium">Listado Bétania</span>
-                                                                <Ripple />
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="mt-auto">
-                                    <hr className="mb-3 mx-3 border-top-1 border-none surface-border" />
-                                    <a v-ripple className="m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors p-ripple">
-                                        <Avatar image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" shape="circle" />
-                                        <span className="font-bold">Amy Elsner</span>
-                                    </a>
-                                </div>
+                                >
+                                    <i className="pi pi-wallet h-5 w-5" />
+                                    Pagos
+                                </Link>
                             </div>
+                        </div>
+                        <div>
+                            <Accordion
+                                showDivider={false}
+                                className="flex flex-col w-full max-w-[300px] "
+                                variant="light"
+                                itemClasses={itemClasses}
+                            >
+                                <AccordionItem
+                                    key="1"
+                                    aria-label="Registro"
+                                    startContent={<i className="pi pi-user-plus" />}
+                                    title="Registro"
+                                >
+                                    <Link
+                                        to={"/pagos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-user-plus h-5 w-5" />
+                                        Registro Usuario
+                                    </Link>
+                                    <Link
+                                        to={"/pagos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-user-plus h-5 w-5" />
+                                        Registro Cliente
+                                    </Link>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+                        <div>
+                            <Accordion
+                                showDivider={false}
+                                className="flex flex-col w-full max-w-[300px] "
+                                variant="light"
+                                itemClasses={itemClasses}
+                            >
+                                <AccordionItem
+                                    key="1"
+                                    aria-label="Facturacion"
+                                    startContent={<i className="pi pi-file-pdf" />}
+                                    title="Facturación"
+                                >
+                                    <Link
+                                        to={"/pagos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-search h-5 w-5" />
+                                        Buscar Factura
+                                    </Link>
+                                    <Link
+                                        to={"/pagos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-pencil h-5 w-5" />
+                                        Crear Factura
+                                    </Link>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+                        <div>
+                            <Accordion
+                                showDivider={false}
+                                className="flex flex-col w-full max-w-[300px] "
+                                variant="light"
+                                itemClasses={itemClasses}
+                            >
+                                <AccordionItem
+                                    key="1"
+                                    aria-label="Listados"
+                                    startContent={<i className="pi pi-book" />}
+                                    title="Listado usuario"
+                                >
+                                    <Link
+                                        to={"/pagos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-book h-5 w-5" />
+                                        Listado San José
+                                    </Link>
+                                    <Link
+                                        to={"/pagos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-book h-5 w-5" />
+                                        Listado Betania
+                                    </Link>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
                     </div>
 
-                )
-                }
-            ></Sidebar >           
-        </div >
-      
+
+                    <div>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Cuenta</h3>
+                        <div className="mt-4 space-y-1">
+
+                            <Link
+                                to="#"
+                                className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                            >
+                                <i className="pi pi-power-off h-5 w-5" />
+                                Cerrar Sesión
+                            </Link>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
     )
 }
 export default SideBar
-
