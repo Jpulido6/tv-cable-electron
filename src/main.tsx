@@ -10,6 +10,12 @@ import Layout from './components/layout/Layout.tsx'
 
 import 'primeicons/primeicons.css';
 import './index.css'
+import ProtectedRoute from './components/common/ProtectedRoute.tsx'
+import Gastos from './components/pages/Gastos.tsx'
+import VerGastos from './components/pages/VerGastos.tsx'
+import Facturas from './components/pages/Facturas.tsx'
+import ListadoSanjose from './components/pages/ListadoSanjose.tsx'
+import ListadoBetania from './components/pages/ListadoBetania.tsx'
 
 const router = createBrowserRouter([
   {
@@ -18,11 +24,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/inicio",
-    element: <Layout><Home /></Layout>
+    element: <ProtectedRoute> <Layout><Home /></Layout></ProtectedRoute>
   },
   {
     path: "/pagos",
-    element: <Layout><Pagos /></Layout>
+    element: <ProtectedRoute> <Layout><Pagos /></Layout></ProtectedRoute>
+  },
+  {
+    path: "/gastos",
+    element: <ProtectedRoute><Layout><Gastos /></Layout></ProtectedRoute>
+  },
+  {
+    path: "/ver-gastos",
+    element: <ProtectedRoute><Layout><VerGastos /></Layout></ProtectedRoute>
+  },
+  {
+    path:"/facturas",
+    element: <ProtectedRoute><Layout><Facturas /></Layout></ProtectedRoute>
+  },
+  {
+    path:"listado-sanjose",
+    element: <ProtectedRoute><Layout><ListadoSanjose /></Layout></ProtectedRoute>
+  },
+  {
+    path:"listado-betania",
+    element: <ProtectedRoute><Layout><ListadoBetania /></Layout></ProtectedRoute>
   },
   {
     path: "*",

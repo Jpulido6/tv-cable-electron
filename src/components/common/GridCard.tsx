@@ -14,7 +14,7 @@ export const GridCard: React.FC<Props> = ({ title, subtitle, icon, color='black'
                 <i className={`pi pi-${icon} text-5xl text-${color}-700`}></i>
                 <div>
                     <h3 className="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">{title}</h3>
-                    <p className={`text-3xl font-bold text-${color}-700`}>{subtitle}</p>
+                    <p className={`text-2xl font-bold text-${color}-700`}>{subtitle}</p>
                 </div>
             </div>
         </div>

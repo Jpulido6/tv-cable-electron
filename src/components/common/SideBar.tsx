@@ -20,6 +20,11 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
         content: "text-small px-2",
     };
 
+    const handleCerrarSesion = () => {
+        localStorage.removeItem('token');
+        window.location.reload();
+    }
+
     return (
         <div className="fixed w-2/3  top-0 left-0 z-40 transition-transform h-screen  ">
             <div className="hidden w-1/3 bg-gray-100 p-6 dark:bg-gray-950 md:block h-screen ">
@@ -32,7 +37,7 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
                 </div>
                 <nav className="mt-8 space-y-4">
                     <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Menu</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Menu</h3>
 
                         <div className="mt-4 space-y-1">
                             <Link
@@ -53,6 +58,38 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
                                     Pagos
                                 </Link>
                             </div>
+                        </div>
+                        <div>
+                            <Accordion
+                                showDivider={false}
+                                className="flex flex-col w-full max-w-[300px] "
+                                variant="light"
+                                itemClasses={itemClasses}
+                            >
+                                <AccordionItem
+                                    key="1"
+                                    aria-label="Registro"
+                                    startContent={<i className="pi pi-file-import" />}
+                                    title="Gastos"
+                                >
+                                    <Link
+                                        to={"/gastos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-pencil h-5 w-5" />
+                                        Registrar gastos
+                                    </Link>
+                                    <Link
+                                        to={"/ver-gastos"}
+                                        className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+
+                                    >
+                                        <i className="pi pi-eye h-5 w-5" />
+                                        Ver gastos
+                                    </Link>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
                         <div>
                             <Accordion
@@ -108,7 +145,7 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
                                         Buscar Factura
                                     </Link>
                                     <Link
-                                        to={"/pagos"}
+                                        to={"/facturas"}
                                         className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
 
                                     >
@@ -132,7 +169,7 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
                                     title="Listado usuario"
                                 >
                                     <Link
-                                        to={"/pagos"}
+                                        to={"/listado-sanjose"}
                                         className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
 
                                     >
@@ -140,7 +177,7 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
                                         Listado San José
                                     </Link>
                                     <Link
-                                        to={"/pagos"}
+                                        to={"/listado-betania"}
                                         className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
 
                                     >
@@ -157,14 +194,14 @@ const SideBar: React.FC<Props> = ({ handleClose }) => {
                         <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Cuenta</h3>
                         <div className="mt-4 space-y-1">
 
-                            <Link
-                                to="#"
-                                className="flex items-center gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
+                            <span                                
+                                onClick={handleCerrarSesion}
+                                className="flex items-center cursor-pointer gap-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 hover:text-gray-900 focus:bg-gray-200 focus:text-gray-900 dark:text-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50"
 
                             >
                                 <i className="pi pi-power-off h-5 w-5" />
                                 Cerrar Sesión
-                            </Link>
+                            </span>
                         </div>
                     </div>
                 </nav>

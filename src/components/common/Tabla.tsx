@@ -18,9 +18,15 @@ import {
   Selection,
   ChipProps,
   SortDescriptor,
-  useDisclosure
 } from "@nextui-org/react";
-import { ModalComponent } from "./ModalComponent";
+import { ModalComponent, Size } from "./ModalComponent";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useActualizarUsuarioMutation, useUsuarioMutation } from "../../hooks/useUsuarioMutation";
+import { Toast } from "primereact/toast";
+import { UsuarioResponse } from "../../services/actions.usuarios";
+import Registrar from "./Registrar";
+import VerUsuario from "./VerUsuario";
+import EditarUsuario from "./EditarUsuario";
 
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -30,13 +36,47 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 
 const INITIAL_VISIBLE_COLUMNS = ["nombres", "direccion", "estado", "acciones"];
 
-type User = typeof users[0];
 
-export default function Tabla() {
+interface FormInput {
+  nombre: string,
+  direccion: string,
+  telefono: string,
+  email: string,
+}
+
+interface FormInputUpdate {
+  nombre: string,
+  direccion: string,
+  telefono: string,
+  estado: string,
+  email: string,
+}
+
+
+interface Props {
+  users: UsuarioResponse[]
+}
+
+interface MappedUser extends Omit<UsuarioResponse, "estado"> {
+  estado: string
+}
+
+const Tabla: React.FC<Props> = ({ users }) => {
+
+  const usuario: MappedUser[] = users.map((user) => {
+    return {
+      ...user,
+      estado: user.estado ? "activo" : "inactivo",
+    }
+  })
+
+  type User = typeof usuario[0];
   const [visibleView, setVisibleView] = React.useState<boolean>(false);
+  const [visibleRegistro, setVisibleRegistro] = React.useState<boolean>(false);
   const [visibleEdit, setVisibleEdit] = React.useState<boolean>(false);
   const [visibleDelete, setVisibleDelete] = React.useState<boolean>(false);
 
+  const toast = React.useRef<Toast>(null)
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -47,15 +87,62 @@ export default function Tabla() {
     direction: "ascending",
   });
 
-  const { onOpenChange, onOpen, isOpen } = useDisclosure()
 
-  const handleVisibleView = () => setVisibleView(true);
-  const hableCloseView = () => setVisibleView(false);
-  const handleVisibleEdit = () => setVisibleEdit(true);
-  const hableCloseEdit = () => setVisibleEdit(false);
+  const [selectedUserId, setSelectedUserId] = React.useState<number>(0)
+
+
+  const handleVisibleView = (id: number) => {
+    setSelectedUserId(id)
+    setVisibleView(true)
+  };
+  const handleCloseView = () => setVisibleView(false);
+  const handleVisibleRegistro = () => setVisibleRegistro(true);
+  const handleCloseRegistro = () => setVisibleRegistro(false);
+
+  const handleVisibleEdit = (id: number) => {
+    setSelectedUserId(id)
+    setVisibleEdit(true)
+  };
+  const handleCloseEdit = () => setVisibleEdit(false);
   const handleVisibleDelete = () => setVisibleDelete(true);
-  const hableCloseDelete = () => setVisibleDelete(false);
+  const handleCloseDelete = () => setVisibleDelete(false);
 
+  const mutation = useUsuarioMutation()
+  const mutationUpdate = useActualizarUsuarioMutation()
+
+  const { control, handleSubmit } = useForm<FormInput>()
+
+  const updateUserForm = useForm<FormInputUpdate>({
+    defaultValues: {
+      nombre: '',
+      direccion: '',
+      telefono: '',
+      estado: '',
+      email: '',
+    }
+  })
+
+  const limpiarFormulario = () => {
+    control._reset()
+  }
+
+  const onSubmit: SubmitHandler<FormInput> = (data) => {
+    mutation.mutate(data)
+    toast.current?.show({ severity: 'success', summary: 'Registrado', detail: 'Usuario registrado' });
+    handleCloseRegistro()
+    limpiarFormulario()
+  }
+
+  const onSubmitUpdate: SubmitHandler<FormInputUpdate> = (data) => {
+
+    const newData = {
+      ...data,
+      estado: data.estado === 'Activo' ? true : false
+    }
+
+    mutationUpdate.mutate({ id: selectedUserId, data: newData })
+
+  }
 
   function capitalize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -73,21 +160,21 @@ export default function Tabla() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...users];
+    let filteredUsers = [...usuario];
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.nombres?.toLowerCase().includes(filterValue.toLowerCase()),
+        user.nombre?.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.estado!),
+        Array.from(statusFilter).includes(user.estado),
       );
     }
 
     return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+  }, [filterValue, statusFilter, hasSearchFilter, usuario]);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -98,13 +185,14 @@ export default function Tabla() {
 
   const sortedItems = React.useMemo(() => {
     return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
+      const first = a[sortDescriptor.column as keyof User] as number | string;
+      const second = b[sortDescriptor.column as keyof User] as number | string;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
+  
 
   const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof User];
@@ -113,11 +201,11 @@ export default function Tabla() {
       case "nombres":
         return (
           <User
-            avatarProps={{ radius: "full", size: "sm", src: user.avatar }}
+            avatarProps={{ radius: "full", size: "sm", src: `https://avatar.iran.liara.run/public/boy?username=${user.nombre}` }}
             classNames={{
               description: "text-default-500",
             }}
-            description={user.email}
+            description={user.nombre}
             name={cellValue}
           >
             {user.email}
@@ -126,15 +214,15 @@ export default function Tabla() {
       case "direccion":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-small capitalize">{cellValue.toString()}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">{user.telefono}</p>
           </div>
         );
       case "estado":
         return (
           <Chip
             className="capitalize border-none gap-1 text-default-600"
-            color={statusColorMap[user.estado!]}
+            color={statusColorMap[user.estado]}
             size="sm"
             variant="dot"
           >
@@ -151,8 +239,8 @@ export default function Tabla() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem onClick={handleVisibleView}>Ver</DropdownItem>
-                <DropdownItem onClick={handleVisibleEdit}>Editar</DropdownItem>
+                <DropdownItem onClick={() => handleVisibleView(user.id)}>Ver</DropdownItem>
+                <DropdownItem onClick={() => handleVisibleEdit(user.id)}>Editar</DropdownItem>
                 <DropdownItem onClick={handleVisibleDelete}>Eliminar</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -249,7 +337,7 @@ export default function Tabla() {
             </Dropdown>
 
             <Button
-              onPress={onOpen}
+              onPress={handleVisibleRegistro}
               className="bg-foreground text-background"
               endContent={<i className="pi pi-plus"></i>}
               size="sm"
@@ -282,7 +370,6 @@ export default function Tabla() {
     onSearchChange,
     onRowsPerPageChange,
     users.length,
-    hasSearchFilter,
   ]);
 
   const bottomContent = React.useMemo(() => {
@@ -330,6 +417,7 @@ export default function Tabla() {
 
   return (
     <>
+      <Toast ref={toast} />
       <Table
         isCompact
         removeWrapper
@@ -364,32 +452,24 @@ export default function Tabla() {
         <TableBody emptyContent={"usuario no encontrado"} items={sortedItems}>
           {(item) => (
             <TableRow key={item.id}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {(columnKey) => {
+                return <TableCell>{renderCell(item, columnKey)}</TableCell>;
+              }}
             </TableRow>
           )}
         </TableBody>
       </Table>
 
       {
-        isOpen &&
+        visibleRegistro &&
         <ModalComponent
           title="Registrar usuario"
           btnText="Registrar"
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
+          isOpen={visibleRegistro}
+          onOpenChange={handleCloseRegistro}
+          btnFn={handleSubmit(onSubmit)}
         >
-          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-            <Input type="text" label="Nombres" placeholder="Ingresa el nombre" />
-          </div>
-          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-            <Input type="email" label="Email" placeholder="Ingresa el email" />
-          </div>
-          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-            <Input type="text" label="Teléfono" placeholder="Ingresa el Teléfono" />
-          </div>
-          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-            <Input type="text" label="Dirección" placeholder="Ingresa la dirección" />
-          </div>
+          <Registrar control={control} />
         </ModalComponent>
       }
       {
@@ -397,251 +477,56 @@ export default function Tabla() {
         <ModalComponent
           title="Ver Usuario"
           isOpen={visibleView}
-          onOpenChange={hableCloseView}
+          onOpenChange={handleCloseView}
           btnText="Ok"
-        ><div>Ver usuario</div></ModalComponent>
+          size={Size.QuintupleExtraLarge}
+        ><VerUsuario id={selectedUserId} /></ModalComponent>
       }
       {
         visibleEdit &&
         <ModalComponent
           title="Editar Usuario"
           isOpen={visibleEdit}
-          onOpenChange={hableCloseEdit}
-          btnText="Guardar"
-        ><div>Editar usuario</div></ModalComponent>
+          onOpenChange={handleCloseEdit}
+          btnText="Actualizar"
+          btnFn={updateUserForm.handleSubmit(onSubmitUpdate)}
+        >
+          <EditarUsuario
+            id={selectedUserId}
+            control={updateUserForm.control}
+          />
+        </ModalComponent>
       }
       {
         visibleDelete &&
         <ModalComponent
           title="Eliminar usuario"
           isOpen={visibleDelete}
-          onOpenChange={hableCloseDelete}
+          onOpenChange={handleCloseDelete}
           btnText="Eliminar"
-        ><div>Eliminar usuario</div></ModalComponent>
+        ><div>¿Estas seguro que quieres eliminar el usuario?</div></ModalComponent>
       }
     </>
   );
 }
 
+export default Tabla
 
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "NOMBRES", uid: "nombres", sortable: true },
-  { name: "AGE", uid: "age", sortable: true },
+  { name: "FECHA DE INSCRIPCIÓN", uid: "fechaInscripcion", sortable: true },
   { name: "DIRECCIÓN", uid: "direccion", sortable: true },
-  { name: "TEAM", uid: "team" },
+  { name: "TELÉFONO", uid: "telefono" },
   { name: "EMAIL", uid: "email" },
   { name: "ESTADO", uid: "estado", sortable: true },
   { name: "ACCIONES", uid: "acciones" },
 ];
 
 const statusOptions = [
-  { name: "activo", uid: "activo" },
-  { name: "inactivo", uid: "inactivo" },
-];
-
-const users = [
-  {
-    id: 1,
-    nombres: "Tony Reichert",
-    direccion: "CEO",
-    team: "Management",
-    estado: "activo",
-    age: "29",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-    email: "tony.reichert@example.com",
-  },
-  {
-    id: 2,
-    nombres: "Zoey Lang",
-    direccion: "Tech Lead",
-    team: "Development",
-    estado: "inactivo",
-    age: "25",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-    email: "zoey.lang@example.com",
-  },
-  {
-    id: 3,
-    nombres: "Jane Fisher",
-    direccion: "Sr. Dev",
-    team: "Development",
-    estado: "activo",
-    age: "22",
-    avatar: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-    email: "jane.fisher@example.com",
-  },
-  {
-    id: 4,
-    nombres: "William Howard",
-    direccion: "C.M.",
-    team: "Marketing",
-    estado: "vacation",
-    age: "28",
-    avatar: "https://i.pravatar.cc/150?u=a048581f4e29026701d",
-    email: "william.howard@example.com",
-  },
-  {
-    id: 5,
-    nombres: "Kristen Copper",
-    direccion: "S. Manager",
-    team: "Sales",
-    estado: "active",
-    age: "24",
-    avatar: "https://i.pravatar.cc/150?u=a092581d4ef9026700d",
-    email: "kristen.cooper@example.com",
-  },
-  {
-    id: 6,
-    name: "Brian Kim",
-    role: "P. Manager",
-    team: "Management",
-    age: "29",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-    email: "brian.kim@example.com",
-    status: "Active",
-  },
-  {
-    id: 7,
-    name: "Michael Hunt",
-    role: "Designer",
-    team: "Design",
-    status: "paused",
-    age: "27",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e29027007d",
-    email: "michael.hunt@example.com",
-  },
-  {
-    id: 8,
-    name: "Samantha Brooks",
-    role: "HR Manager",
-    team: "HR",
-    status: "active",
-    age: "31",
-    avatar: "https://i.pravatar.cc/150?u=a042581f4e27027008d",
-    email: "samantha.brooks@example.com",
-  },
-  {
-    id: 9,
-    name: "Frank Harrison",
-    role: "F. Manager",
-    team: "Finance",
-    status: "vacation",
-    age: "33",
-    avatar: "https://i.pravatar.cc/150?img=4",
-    email: "frank.harrison@example.com",
-  },
-  {
-    id: 10,
-    name: "Emma Adams",
-    role: "Ops Manager",
-    team: "Operations",
-    status: "active",
-    age: "35",
-    avatar: "https://i.pravatar.cc/150?img=5",
-    email: "emma.adams@example.com",
-  },
-  {
-    id: 11,
-    name: "Brandon Stevens",
-    role: "Jr. Dev",
-    team: "Development",
-    status: "active",
-    age: "22",
-    avatar: "https://i.pravatar.cc/150?img=8",
-    email: "brandon.stevens@example.com",
-  },
-  {
-    id: 12,
-    name: "Megan Richards",
-    role: "P. Manager",
-    team: "Product",
-    status: "paused",
-    age: "28",
-    avatar: "https://i.pravatar.cc/150?img=10",
-    email: "megan.richards@example.com",
-  },
-  {
-    id: 13,
-    name: "Oliver Scott",
-    role: "S. Manager",
-    team: "Security",
-    status: "active",
-    age: "37",
-    avatar: "https://i.pravatar.cc/150?img=12",
-    email: "oliver.scott@example.com",
-  },
-  {
-    id: 14,
-    name: "Grace Allen",
-    role: "M. Specialist",
-    team: "Marketing",
-    status: "active",
-    age: "30",
-    avatar: "https://i.pravatar.cc/150?img=16",
-    email: "grace.allen@example.com",
-  },
-  {
-    id: 15,
-    name: "Noah Carter",
-    role: "IT Specialist",
-    team: "I. Technology",
-    status: "inactivo",
-    age: "31",
-    avatar: "https://i.pravatar.cc/150?img=15",
-    email: "noah.carter@example.com",
-  },
-  {
-    id: 16,
-    name: "Ava Perez",
-    role: "Manager",
-    team: "Sales",
-    status: "active",
-    age: "29",
-    avatar: "https://i.pravatar.cc/150?img=20",
-    email: "ava.perez@example.com",
-  },
-  {
-    id: 17,
-    name: "Liam Johnson",
-    role: "Data Analyst",
-    team: "Analysis",
-    status: "activo",
-    age: "28",
-    avatar: "https://i.pravatar.cc/150?img=33",
-    email: "liam.johnson@example.com",
-  },
-  {
-    id: 18,
-    name: "Sophia Taylor",
-    role: "QA Analyst",
-    team: "Testing",
-    status: "activo",
-    age: "27",
-    avatar: "https://i.pravatar.cc/150?img=29",
-    email: "sophia.taylor@example.com",
-  },
-  {
-    id: 19,
-    name: "Lucas Harris",
-    role: "Administrator",
-    team: "Information Technology",
-    status: "inactivo",
-    age: "32",
-    avatar: "https://i.pravatar.cc/150?img=50",
-    email: "lucas.harris@example.com",
-  },
-  {
-    id: 20,
-    name: "Mia Robinson",
-    role: "Coordinator",
-    team: "Operations",
-    status: "activo",
-    age: "26",
-    avatar: "https://i.pravatar.cc/150?img=45",
-    email: "mia.robinson@example.com",
-  },
+  { name: "Activo", uid: "activo" },
+  { name: "Inactivo", uid: "inactivo" },
 ];
 
 
