@@ -4,8 +4,8 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Input, Button, Image } from '@nextui-org/react'
 
 import logo from "../../assets/images/TV.webp"
-import { useLoginMutation } from '../../hooks/useLoginMutation'
-import { Toast } from 'primereact/toast'
+import { useLoginMutation } from '../../hooks/login/useLoginMutation'
+import { Toaster } from 'sonner'
 
 interface FormInput {
     email: string,
@@ -18,8 +18,8 @@ const Login: React.FC = () => {
     const { control, handleSubmit } = useForm<FormInput>()
     const mutation = useLoginMutation()
 
-    const onSubmit: SubmitHandler<FormInput> = (data) => mutation.mutate( data )
-    
+    const onSubmit: SubmitHandler<FormInput> = (data) => mutation.mutate(data)
+
     const toggleVisible = () => setIsVisible(!isVisible)
 
 
@@ -27,7 +27,7 @@ const Login: React.FC = () => {
         <>
             <div className="flex justify-center items-center h-screen">
 
-                <Toast/>
+                <Toaster />
                 <div className="w-1/2 h-screen hidden lg:flex lg:items-center lg:justify-center ">
                     <Image
                         alt="tv cable San Jose"
@@ -57,8 +57,8 @@ const Login: React.FC = () => {
                                             className="w-full"
                                             value={field.value}
                                             onChange={field.onChange}
-                                            startContent={<i className="pi pi-envelope text-default-400 " 
-                                            />}                                            
+                                            startContent={<i className="pi pi-envelope text-default-400 "
+                                            />}
                                         />
                                     )}
                                 />
@@ -104,7 +104,7 @@ const Login: React.FC = () => {
                         </div>
 
                         <Button
-                            type="submit"                            
+                            type="submit"
                             className="bg-foreground text-background w-full"
                             size="lg"
                         >

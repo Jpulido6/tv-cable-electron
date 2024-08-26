@@ -198,7 +198,7 @@
 import { Input, Select, SelectItem } from '@nextui-org/react';
 import React, { useEffect } from 'react';
 import { useForm, Controller, Control } from 'react-hook-form';
-import { useUsuarioById } from '../../hooks/useUsuarios';
+import { useUsuarioById } from '../../hooks/usuarios/useUsuarios';
 import Loading from './Loading';
 
 interface FormInput {

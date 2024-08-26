@@ -15,13 +15,13 @@ export interface UsuarioResponse {
     email: string
     telefono: string
     estado: boolean | string
-    fechaInscripcion: Date
+    fechaInscripcion: Date | string
 }
 
 export interface Pago {
     id?: number;
     codigoFactura: string;
-    fechaPago?: string;
+    fechaPago: string;
     montoPagado: string;
 }
 

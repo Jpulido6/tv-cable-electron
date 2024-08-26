@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query"
-import { registrarPago } from "../services/actions.pagos"
+import { registrarGasto } from "../../services/action.gastos"
 
 
-export const usePagosMutation = () => {
+export const useGastosMutation = () =>{
+
     const mutation = useMutation({
-        mutationKey: ['pagos'],
-        mutationFn: registrarPago,
+        mutationFn: registrarGasto,
         onSuccess: (data) => {
             console.log(data)
         },

@@ -1,11 +1,10 @@
 
 import { useEffect } from 'react'
-import { useUsuarios } from '../../hooks/useUsuarios'
+import { useUsuarios } from '../../hooks/usuarios/useUsuarios'
 import { GridCard } from '../common/GridCard'
 import { LatestUser } from '../common/LatestUser'
 import Tabla from '../common/Tabla'
-import { useIngresosMensuales, useIngresosDiarios } from '../../hooks/useIngresos'
-import { formatearMoneda } from '../../utils/formatMoneda'
+import { useIngresosMensuales, useIngresosDiarios } from '../../hooks/ingresos/useIngresos'
 import Loading from '../common/Loading'
 
 
@@ -43,20 +42,19 @@ const Home = () => {
     return (
         <>
             <div className="grid">
-                <div className="p-6 flex items-center justify-start gap-4">
-                    <GridCard title="Total clientes" subtitle={usuarios.data.length.toString()} icon="users" />
-                    <GridCard title="Pagos diarios" subtitle={'$' + formatearMoneda(ingresosDiarios.data.toString())} icon="dollar" />
-                    <GridCard title="Pagos Mensuales" subtitle={'$' + formatearMoneda(ingresosMensuales.data.toString())} icon="credit-card" />
+                <div className="flex items-center justify-start gap-4">
+                    <GridCard title="Total clientes" subtitle={usuarios.data.length} icon="users" />
+                    <GridCard title="Pagos diarios" subtitle={ingresosDiarios.data} icon="dollar" />
+                    <GridCard title="Pagos Mensuales" subtitle={ingresosMensuales.data} icon="credit-card" />
                 </div>
             </div>
-            <div className="grid grid-cols-3 gap-6">
-                <div className="col-span-2">
+            <div className="grid grid-cols-[3fr,1fr] gap-6">
+                <div className="">
                     <div className='rounded-lg border bg-card text-card-foreground shadow-sm p-4 h-[450px] overflow-y-auto'>
                         <Tabla users={usuarios.data} />
                     </div>
                 </div>
-
-                <div className='col-span-1'>
+                <div className=''>
                     <LatestUser user={usuarios.data} />
 
                 </div>

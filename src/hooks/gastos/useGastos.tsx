@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { obtenerGastos } from "../services/action.gastos"
+import { obtenerGastos } from "../../services/action.gastos"
 
 
 

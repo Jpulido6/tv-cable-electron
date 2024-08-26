@@ -3,8 +3,8 @@ import {
     obtenerUsuarios, 
     obtenerUsuariosConFactura, 
     verUsuarioId 
-} from "../services/actions.usuarios"
-import { DatosResponse } from "../components/common/GenerarFacturas"
+} from "../../services/actions.usuarios"
+import { DatosResponse } from "../../components/common/GenerarFacturas"
 
 
 export const useUsuarios = () =>{    

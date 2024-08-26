@@ -21,12 +21,12 @@ import {
 } from "@nextui-org/react";
 import { ModalComponent, Size } from "./ModalComponent";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useActualizarUsuarioMutation, useUsuarioMutation } from "../../hooks/useUsuarioMutation";
-import { Toast } from "primereact/toast";
 import { UsuarioResponse } from "../../services/actions.usuarios";
 import Registrar from "./Registrar";
 import VerUsuario from "./VerUsuario";
 import EditarUsuario from "./EditarUsuario";
+import { Toaster } from "sonner";
+import { useActualizarUsuarioMutation, useUsuarioMutation } from "../../hooks/usuarios/useUsuarioMutation";
 
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -67,6 +67,7 @@ const Tabla: React.FC<Props> = ({ users }) => {
     return {
       ...user,
       estado: user.estado ? "activo" : "inactivo",
+      fechaInscripcion: new Date(user.fechaInscripcion).toLocaleDateString('es-ES', { year: '2-digit', month: 'short', day: '2-digit' })
     }
   })
 
@@ -76,7 +77,7 @@ const Tabla: React.FC<Props> = ({ users }) => {
   const [visibleEdit, setVisibleEdit] = React.useState<boolean>(false);
   const [visibleDelete, setVisibleDelete] = React.useState<boolean>(false);
 
-  const toast = React.useRef<Toast>(null)
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -128,7 +129,6 @@ const Tabla: React.FC<Props> = ({ users }) => {
 
   const onSubmit: SubmitHandler<FormInput> = (data) => {
     mutation.mutate(data)
-    toast.current?.show({ severity: 'success', summary: 'Registrado', detail: 'Usuario registrado' });
     handleCloseRegistro()
     limpiarFormulario()
   }
@@ -141,6 +141,8 @@ const Tabla: React.FC<Props> = ({ users }) => {
     }
 
     mutationUpdate.mutate({ id: selectedUserId, data: newData })
+    handleCloseEdit()
+    updateUserForm.control._reset()
 
   }
 
@@ -192,7 +194,7 @@ const Tabla: React.FC<Props> = ({ users }) => {
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
-  
+
 
   const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof User];
@@ -211,11 +213,11 @@ const Tabla: React.FC<Props> = ({ users }) => {
             {user.email}
           </User>
         );
+        //new Date(user.fechaInscripcion).toLocaleDateString()
       case "direccion":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue.toString()}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.telefono}</p>
           </div>
         );
       case "estado":
@@ -342,13 +344,13 @@ const Tabla: React.FC<Props> = ({ users }) => {
               endContent={<i className="pi pi-plus"></i>}
               size="sm"
             >
-              Agregar usuario
+              Agregar Cliente
             </Button>
 
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} usuarios</span>
+          <span className="text-default-400 text-small">Total {users.length} Clientes</span>
           <label className="flex items-center text-default-400 text-small">
             filas por página:
             <select
@@ -417,7 +419,7 @@ const Tabla: React.FC<Props> = ({ users }) => {
 
   return (
     <>
-      <Toast ref={toast} />
+      <Toaster />
       <Table
         isCompact
         removeWrapper

@@ -12,7 +12,8 @@ interface PagosResponse {
 }
 
 
-export const registrarPago = async (data: PagosData): Promise<PagosResponse> =>{
+export const registrarPago = async (data: PagosData): Promise<PagosResponse> =>{    
     const response = await api.post<PagosResponse>('pagos/registrar_pago', data)
+    console.log('res',response.data)
     return response.data
 }

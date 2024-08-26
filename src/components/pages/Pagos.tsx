@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Accordion, AccordionItem, Button, Input } from '@nextui-org/react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { useBuscarFacturas } from '../../hooks/useFacturas'
+import { useBuscarFacturas } from '../../hooks/facturas/useFacturas'
 import { formatearMoneda } from '../../utils/formatMoneda'
 import { formatearFecha2 } from '../../utils/formatearFecha'
-import { usePagosMutation } from '../../hooks/usePagosMutation'
-import { Toast } from 'primereact/toast'
+import { usePagosMutation } from '../../hooks/pagos/usePagosMutation'
+import { Toaster } from 'sonner'
 
 interface FormInput {
     codigoFactura: string,
@@ -14,12 +14,17 @@ interface FormInput {
 
 const Pagos = () => {
 
-    const toast = useRef<Toast>(null)
+
     const { control, handleSubmit } = useForm<FormInput>()
     const [codigo, setCodigo] = useState<string>()
 
-    const { data, isLoading } = useBuscarFacturas(codigo!)
-    const { mutate, error } = usePagosMutation()
+    const { data, isLoading, isError } = useBuscarFacturas(codigo!)
+    const { mutate } = usePagosMutation()
+    console.log("Error",isError)
+
+    // if(isError){
+    //     toast.error('Error al buscar la factura')
+    // }
 
     const onSubmit: SubmitHandler<FormInput> = (data) => {
 
@@ -28,33 +33,32 @@ const Pagos = () => {
             montoPagado: Number(data.montoPagado)
         }
         mutate(newData)
-        if (error) {
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Error al registrar pago', life: 3000 });
-        } else {
-            toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Pago registrado', life: 3000 });
-        }
-        control._reset()
+
         setCodigo('')
 
     }
     useEffect(() => {
         if (codigo) setCodigo(codigo)
+
+            return ()=>{
+                setCodigo('')
+            }
     }, [codigo])
 
-    
+
 
     const datosFactura = data
         ? (
             <div className='flex flex-col gap-2'>
-                <span className="whitespace-nowrap text-md font-bold leading-none tracking-tight">Cliente: <span className='text-foreground font-extrabold'>{data.resultado.usuario.nombre}</span> </span>
-                <span className="whitespace-nowrap text-md font-bold leading-none tracking-tight">N° Factura: {data.resultado.codigoFactura}</span>
-                <span className="whitespace-nowrap text-md font-bold leading-none tracking-tight ">Fecha Factura: {formatearFecha2(data.resultado.fechaEmision.toString())}</span>
-                <span className="text-md font-bold leading-none tracking-tight">Valor: ${formatearMoneda(data.resultado.montoTotal?.toString())}</span>
+                <span className="whitespace-nowrap text-md font-bold leading-none tracking-tight  font-poppins-bold">Cliente: <span className='text-foreground font-extrabold font-poppins'>{data.resultado.usuario.nombre}</span> </span>
+                <span className="whitespace-nowrap text-md font-bold leading-none tracking-tight font-poppins-bold">N° Factura: <span className='text-foreground font-extrabold font-poppins'>{data.resultado.codigoFactura}</span></span>
+                <span className="whitespace-nowrap text-md font-bold leading-none tracking-tight  font-poppins-bold">Fecha Factura: <span className='text-foreground font-extrabold font-poppins'> {formatearFecha2(data.resultado.fechaEmision.toString())}</span></span>
+                <span className="text-md font-bold leading-none tracking-tight font-poppins-bold">Valor: <span className='text-foreground font-extrabold font-poppins'>${formatearMoneda(data.resultado.montoTotal?.toString())}</span></span>
                 {
                     data.resultado.pagos.length > 0 ? (
-                        <p className='text-green-500'>Factura fue pagada</p>
+                        <p className='text-green-500 font-poppins-bold'>Factura fue pagada</p>
                     ) : (
-                        <p className='text-red-500'>Factura no fue pagada</p>
+                        <p className='text-red-500 font-poppins-bold'>Factura no fue pagada</p>
                     )
                 }
             </div>
@@ -64,12 +68,13 @@ const Pagos = () => {
 
     return (
         <div className='flex justify-center items-center h-[80vh] '>
-            <Toast ref={toast} />
+            <Toaster />
             <div className='rounded-lg border bg-card text-card-foreground shadow-sm p-5 w-96 m-auto'>
-                <div className='flex flex-col space-y-1.5 p-4'>
-                    <span className="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight text-center">Registrar Pago</span>
+                <div className='flex flex-col space-y-1.5'>
+                    <span className="whitespace-nowrap text-2xl font-poppins-bold leading-none tracking-tight">Registrar Pago</span>
+                    <span className="text-sm font-poppins leading-none tracking-tight text-gray-500">Ingrese el código de factura para realizar el pago</span>
                 </div>
-                <form onSubmit={handleSubmit(onSubmit)} className='mt-5' >
+                <form onSubmit={handleSubmit(onSubmit)} className='mt-10' >
                     <div className="mb-4">
                         <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
                             <Controller
@@ -77,19 +82,21 @@ const Pagos = () => {
                                 name='codigoFactura'
                                 rules={{ required: true }}
                                 render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        placeholder="Escribe el código de la factura"
-                                        type="text"
-                                        label="Código factura"
-                                        variant="bordered"
-                                        className="w-full"
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        endContent={
-                                            <Button onClick={() => setCodigo(field.value)}><i className='pi pi-search' /></Button>
-                                        }
-                                    />
+                                    <>
+                                        <Input
+                                            {...field}
+                                            placeholder="Escribe el código de la factura"
+                                            type="text"                                            
+                                            variant="bordered"
+                                            className="w-full"
+                                            value={field.value}
+                                            onChange={field.onChange}                                        
+                                        />
+                                        <div>
+                                            <Button className='bg-foreground text-background h-full' onClick={() => setCodigo(field.value)}><i className={`${ isLoading ? ' pi pi-spin pi-spinner': 'pi pi-search'}`} style={{ fontSize: '1rem' }} /></Button>
+                                        </div>
+
+                                    </>
                                 )}
                             />
 
@@ -149,7 +156,7 @@ const Pagos = () => {
                                     className="w-full mt-8 bg-foreground text-background"
                                     isDisabled={data?.resultado.pagos.length > 0 ? true : false}
                                 >
-                                    Registrar Pago
+                                    Pagar factura
                                 </Button>
                             </>
                         )

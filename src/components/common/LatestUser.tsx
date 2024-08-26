@@ -53,7 +53,7 @@ export const LatestUser: React.FC<Props> = ({ user }) => {
         <>
             <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-y-auto h-[450px]">
                 <div className="flex flex-col space-y-1.5 p-4">
-                    <h3 className="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">Últimos usuarios</h3>
+                    <h3 className="whitespace-nowrap text-2xl font-poppins-bold leading-none tracking-tight">Últimos usuarios</h3>
                 </div>
                 <div className="p-4 space-y-4">                    
                     {

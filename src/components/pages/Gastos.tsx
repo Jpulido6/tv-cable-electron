@@ -1,7 +1,7 @@
 import { Button, Input, Textarea } from '@nextui-org/react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { formatearMoneda } from '../../utils/formatMoneda';
-import { useGastosMutation } from '../../hooks/useGastosMutation';
+import { useGastosMutation } from '../../hooks/gastos/useGastosMutation';
 import { useRef } from 'react';
 import { Toast } from 'primereact/toast';
 

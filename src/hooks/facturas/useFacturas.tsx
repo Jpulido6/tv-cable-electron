@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { buscarFactura, generarFacturas } from "../services/action.facturas"
+import { buscarFactura, generarFacturas } from "../../services/action.facturas"
 
 
 
@@ -9,6 +9,7 @@ export const useBuscarFacturas = (codigo: string) => {
         queryFn: () => buscarFactura(codigo),
         enabled: !!codigo,
         retry: 2,
+        
     })
     return facturasQuery;
 }

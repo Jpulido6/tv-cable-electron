@@ -1,5 +1,5 @@
 import {  PDFViewer } from '@react-pdf/renderer'
-import { useListadoSanjose } from '../../hooks/useListadoUsuarios'
+import { useListadoSanjose } from '../../hooks/listados/useListadoUsuarios'
 import Loading from '../common/Loading'
 import GenerarListado from '../common/GenerarListado'
 

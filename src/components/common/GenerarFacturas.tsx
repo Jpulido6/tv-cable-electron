@@ -4,7 +4,6 @@ import Loading from './Loading';
 import logo from '../../assets/images/logo.png'
 import tv from '../../assets/images/tv.png'
 import { Pago } from '../../services/actions.usuarios';
-import { formatearFecha2 } from '../../utils/formatearFecha';
 import { formatearMoneda } from '../../utils/formatMoneda';
 import JsBarcode from 'jsbarcode';
 
@@ -36,14 +35,19 @@ interface FacturaPdfProps {
 }
 
 const GenerarFacturas: React.FC<FacturaPdfProps> = ({ usuarios }) => {
-
-    console.log('user', usuarios)
-
-    const date = new Date()
+    console.log('usuarios: ', usuarios)
 
 
     if (!usuarios) {
         return <Loading />
+    }
+
+    const fechaSumada = (fecha: Date) => {
+        const fechaInicial = new Date(fecha)
+
+        fechaInicial.setDate(fechaInicial.getDate() + 30)
+        return fechaInicial.toLocaleDateString()
+
     }
     return (
         <Document>
@@ -54,498 +58,380 @@ const GenerarFacturas: React.FC<FacturaPdfProps> = ({ usuarios }) => {
                     usuarios.map((user) => {
                         const { id, nombre, facturas, saldo, direccion, telefono } = user
 
-                        // const pago = facturas.flatMap((factura) => {
-                        //     return factura.pagos.map((pagos) => pagos)
-                        // })
+                        const pago = facturas ? facturas.flatMap((factura) => {
+                            return factura.pagos.map((pagos) => pagos)
+                        }) : []
+
+                        const ultimoPago = pago.length > 0 ? pago[pago.length - 1] : null
+
                         const ultimaFactura = facturas && facturas.length > 0
                             ? facturas[facturas.length - 1]
                             : null
-                        if (!ultimaFactura) return []
+
 
                         const barcodeDataUrl = (() => {
                             const canvas = document.createElement('canvas');
-                            JsBarcode(canvas, ultimaFactura.codigoFactura, {
+                            JsBarcode(canvas, ultimaFactura ? ultimaFactura.codigoFactura : '1', {
                                 format: 'CODE128',
                                 fontSize: 10,
-
                             });
                             return canvas.toDataURL('image/png');
                         })();
 
-                        // const ultimoPago = pago.length > 0 ? pago[pago.length - 1] : 0
-                        // if (!ultimoPago) return 0
-                        // return (
-                        //     <View style={styles.container} key={id}>
-                        //         <View style={styles.boxOne}>
-                        //             <View style={styles.containerBoxOne}>
-                        //                 <View style={styles.containerLogo}>
-                        //                     <Image src={logo} style={styles.logo}></Image>
-                        //                     <Text style={styles.title}>TV CABLE SAN JOSE</Text>
-                        //                 </View>
-                        //                 <View style={styles.containerFechas}>
-                        //                     <View style={styles.table}>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.tableColHeader, styles.tableCellHeader]}>FECHA EMISION</Text>
-                        //                             <Text style={[styles.tableColHeader, styles.tableCellHeader]}>ULTIMO PAGO</Text>
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={styles.tableCol}>{new Date(ultimaFactura.fechaEmision).toLocaleDateString()}</Text>
-                        //                             <Text style={styles.tableCol}>{'$' + formatearMoneda(ultimoPago.montoPagado?.toString())}</Text>
-                        //                         </View>
-                        //                     </View>
-                        //                     <View style={styles.table}>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.tableColHeader, styles.tableCellHeader]}>FECHA PAGO</Text>
-                        //                             <Text style={[styles.tableColHeader, styles.tableCellHeader]}>FECHA DE CORTE</Text>
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={styles.tableCol}>{new Date().toLocaleDateString()}</Text>
-                        //                             <Text style={styles.tableCol}>{new Date().toLocaleDateString()}</Text>
-                        //                         </View>
-                        //                     </View>
-                        //                 </View>
-
-                        //             </View>
-                        //             <View style={styles.containerBoxTwo}>
-                        //                 <View style={styles.containerFactura}>
-                        //                     <Text style={styles.title}>FACTURA</Text>
-
-                        //                     <View style={styles.containerTable}>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>NOMBRE </Text>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>{nombre.toLocaleUpperCase()} </Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>MES </Text>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>{formatearFecha2(ultimaFactura.fechaEmision.toString())}</Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>N° FACTURA </Text>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>{ultimaFactura.codigoFactura}</Text>
-
-                        //                         </View>
-                        //                     </View>
-
-                        //                 </View>
-                        //                 <View style={styles.containerFechas}>
-
-                        //                     <View style={styles.containerTable}>
-                        //                         <View style={styles.table}>
-                        //                             <View style={styles.tableRow}>
-                        //                                 <Text style={styles.tableCol}></Text>
-                        //                                 <Text style={styles.tableCol}></Text>
-
-                        //                             </View>
-                        //                             <View style={styles.tableRow}>
-                        //                                 <Text style={[styles.text, styles.tableColHeader]}>SALDO ANTERIOR</Text>
-                        //                                 <Text style={[styles.text, styles.tableColHeader]}>{'$'+formatearMoneda(ultimaFactura.montoTotal.toString())}</Text>
-
-                        //                             </View>
-                        //                             <View style={styles.tableRow}>
-                        //                                 <Text style={[styles.text, styles.tableCol]}>ABONO</Text>
-                        //                                 <Text style={[styles.text, styles.tableCol]}></Text>
-
-                        //                             </View>
-                        //                             <View style={styles.tableRow}>
-                        //                                 <Text style={[styles.text, styles.tableColHeader]}>TOTAL A PAGAR</Text>
-                        //                                 <Text style={[styles.text, styles.tableColHeader]}>{'$'+formatearMoneda(saldo.toString())}</Text>
-
-                        //                             </View>
-                        //                         </View>
-
-                        //                     </View>
-                        //                 </View>
-                        //             </View>
-
-
-                        //         </View>
-                        //         <View style={styles.boxTwo}>
-                        //             <View style={styles.containerOneBoxTwo}>
-                        //                 <View style={styles.containerFacturaTwo}>
-                        //                     <Text style={styles.title}>TV CABLE SAN JOSE</Text>
-
-                        //                     <View style={styles.containerTable}>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>NOMBRE </Text>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>{nombre.toLocaleUpperCase()}</Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>MES </Text>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>{formatearFecha2(ultimaFactura.fechaEmision.toString())}</Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>N° FACTURA </Text>
-                        //                             <Text style={[styles.text, styles.tableColHeaderFactura]}>{facturas[0].codigoFactura}</Text>
-
-                        //                         </View>
-                        //                     </View>
-
-                        //                 </View>
-                        //             </View>
-                        //             <View style={styles.containerTwoBoxTwo}>
-                        //                 <View style={styles.containerTable}>
-                        //                     <View style={styles.table}>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={styles.tableCol}>FECHA DE PAGO</Text>
-                        //                             <Text style={styles.tableCol}></Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeader]}>SALDO ANTERIOR</Text>
-                        //                             <Text style={[styles.text, styles.tableColHeader]}>{'$'+formatearMoneda(ultimaFactura.montoTotal.toString())}</Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableCol]}>ABONO</Text>
-                        //                             <Text style={[styles.text, styles.tableCol]}></Text>
-
-                        //                         </View>
-                        //                         <View style={styles.tableRow}>
-                        //                             <Text style={[styles.text, styles.tableColHeader]}>TOTAL A PAGAR</Text>
-                        //                             <Text style={[styles.text, styles.tableColHeader]}>{'$'+formatearMoneda(saldo.toString())}</Text>
-
-                        //                         </View>
-                        //                     </View>
-
-                        //                 </View>
-                        //             </View>
-
-                        //         </View>
-
-                        //     </View>
-                        //)
 
                         return (
-                            <View style={styles.container} key={id}>
-                                <View style={styles.header}>
-                                    <View style={styles.containerOne}>
-                                        <View style={styles.containerLogo}>
-                                            <View style={{ width: 70, height: 'auto', paddingRight: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                                <Image src={logo} style={styles.logo} />
-                                            </View>
-                                            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                                <Text style={styles.text}>TV CABLE SAN JOSE</Text>
-                                                <Text style={styles.subtitle}>3105922940</Text>
-                                                <Text style={styles.subtitle}>NIT 942349952-1</Text>
-                                            </View>
-
-                                        </View>
-                                        <View style={styles.containerUser}>
-                                            <Text style={styles.text}>{nombre}</Text>
-                                            <Text style={[styles.subtitle, { marginTop: 8, fontWeight: 'bold' }]}>
-                                                Dirección: <Text style={{ fontSize: 12, fontWeight: 'thin' }}>{direccion}</Text>
-                                            </Text>
-                                            <Text style={[styles.subtitle,]}>Mes Factura:
-                                                <Text style={{ fontSize: 14, fontWeight: 'medium' }}>{formatearFecha2(date.toString()).toUpperCase()}
+                            <>
+                                {
+                                    facturas.length > 0 && (
+                                        <View style={styles.container} key={id}>
+                                            <View style={{
+                                                position: 'absolute',
+                                                zIndex: 20,
+                                                left: '30%',
+                                                top: '40%'
+                                            }}>
+                                                <Text style={{ color: 'red', transform: 'rotate(15deg)', fontWeight: 'bold', fontSize: 30 }}>
+                                                    {saldo >= 45000 ? 'SUSPENSIÓN' : ''}
                                                 </Text>
-                                            </Text>
-                                        </View>
-
-                                    </View>
-                                </View>
-                                <View style={styles.container2}>
-
-                                    <View style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        width: '100%',
-                                        justifyContent: 'space-between',
-                                    }}>
-
-                                        <View style={{
-                                            width: '30%',
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            backgroundColor: '#21212121',
-                                            borderBottomLeftRadius: 10,
-                                        }}
-                                        >
-                                            <Image
-                                                src={tv}
-                                                style={{
-                                                    width: 40,
-                                                    height: 40,
-                                                    left: -4
-                                                }}
-                                            />
-                                            <View style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}>
-                                                <Text style={{ fontSize: 10 }}>SERVICIO DE TELEVISION</Text>
-                                                <Text style={{ fontSize: 10 }}>POR CABLE</Text>
                                             </View>
-                                        </View>
-                                        <View style={{
-                                            width: '30%',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}>
-                                            <Text style={{ fontSize: 10 }}>Fecha de Emision de la Factura</Text>
-                                            <Text style={{ fontSize: 10 }}>{new Date(ultimaFactura.fechaEmision).toLocaleDateString()}</Text>
-
-
-                                        </View>
-                                        <View style={styles.totalPagar}>
-                                            <Text style={styles.subtitle}>TOTAL A PAGAR</Text>
-                                            <Text style={styles.subtitle}>{'$' + formatearMoneda(saldo.toString())}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                                <View style={styles.container3}>
-                                    <View style={{
-                                        backgroundColor: '#21212121',
-                                        width: '100%',
-                                        height: '20px',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        borderBottomRightRadius: 5,
-                                        borderTopLeftRadius: 5,
-                                        borderBottomLeftRadius: 5,
-
-                                    }}>
-                                        <Text style={{ fontSize: 10, textAlign: 'center' }}>CONOCE LOS COBROS A DETALLE</Text>
-                                    </View>
-                                    <View style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        width: '100%',
-                                        justifyContent: 'space-between',
-
-                                    }}>
-                                        <View style={{ width: '39%', height: 100 }}>
-                                            <View style={{
-                                                display: 'flex',
-                                                width: '100%',
-                                                height: '100px',
-
-                                            }}>
-                                                <View style={{
-                                                    display: 'flex',
-                                                    width: '100%',
-                                                    height: '45px',
-                                                    marginTop: 4,
-                                                    borderWidth: '1px',
-                                                    borderColor: 'gray',
-                                                    borderBottomRightRadius: 5,
-                                                    borderTopLeftRadius: 5,
-                                                    borderBottomLeftRadius: 5,
-                                                }}>
-                                                    <View style={{
-                                                        backgroundColor: '#21212121',
-                                                        display: 'flex', width: '100%',
-                                                        height: '20px',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center'
-                                                    }}>
-                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>ULTIMO PAGO</Text>
+                                            <View style={styles.header}>
+                                                <View style={styles.containerOne}>
+                                                    <View style={styles.containerLogo}>
+                                                        <View style={{ width: 70, height: 'auto', paddingRight: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                                            <Image src={logo} style={styles.logo} />
+                                                        </View>
+                                                        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                                            <Text style={styles.text}>TV CABLE SAN JOSE</Text>
+                                                            <Text style={styles.subtitle}>TEL: 3105922940</Text>
+                                                            <Text style={styles.subtitle}>NIT: 942349952-1</Text>
+                                                        </View>
 
                                                     </View>
+                                                    <View style={styles.containerUser}>
+                                                        <Text style={styles.text}>{nombre}</Text>
+                                                        <Text style={[styles.subtitle, { marginTop: 8, fontWeight: 'bold' }]}>
+                                                            Dirección: <Text style={{ fontSize: 12, fontWeight: 'thin' }}>{direccion}</Text>
+                                                        </Text>
+                                                        <Text style={[styles.subtitle,]}>Mes Factura:
+                                                            <Text style={{ fontSize: 14, fontWeight: 'medium' }}>{new Date(ultimaFactura ? ultimaFactura?.fechaEmision : '').toLocaleDateString('es-Es', {
+                                                                month: 'long',
+                                                                year: 'numeric',
+                                                            })}
+                                                            </Text>
+                                                        </Text>
+                                                    </View>
+
+                                                </View>
+                                            </View>
+                                            <View style={styles.container2}>
+
+                                                <View style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    width: '100%',
+                                                    justifyContent: 'space-between',
+                                                }}>
+
                                                     <View style={{
-                                                        width: '100%',
+                                                        width: '30%',
                                                         display: 'flex',
                                                         flexDirection: 'row',
-                                                        justifyContent: 'space-between'
-                                                    }}>
-                                                        <View style={{ width: '65%' }}>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>Fecha del ultimo pago</Text>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
-
-                                                        </View>
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        backgroundColor: '#21212121',
+                                                        borderBottomLeftRadius: 10,
+                                                    }}
+                                                    >
+                                                        <Image
+                                                            src={tv}
+                                                            style={{
+                                                                width: 40,
+                                                                height: 40,
+                                                                left: -4
+                                                            }}
+                                                        />
                                                         <View style={{
-                                                            width: '35%',
-                                                            height: 'auto',
-                                                            backgroundColor: '#21212121',
                                                             display: 'flex',
                                                             flexDirection: 'column',
-                                                            padding: 5
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
                                                         }}>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>V.PAGADO</Text>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>{'$' + formatearMoneda((saldo - 15000).toString())}</Text>
+                                                            <Text style={{ fontSize: 10 }}>SERVICIO DE TELEVISION</Text>
+                                                            <Text style={{ fontSize: 10 }}>POR CABLE</Text>
                                                         </View>
                                                     </View>
-                                                </View>
+                                                    <View style={{
+                                                        width: '30%',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                    }}>
+                                                        <Text style={{ fontSize: 10 }}>Fecha de Emision de la Factura</Text>
+                                                        <Text style={{ fontSize: 10 }}>{ultimaFactura ? new Date(ultimaFactura.fechaEmision).toLocaleDateString('es-Es', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</Text>
 
+
+                                                    </View>
+                                                    <View style={styles.totalPagar}>
+                                                        <Text style={styles.subtitle}>TOTAL A PAGAR</Text>
+                                                        <Text style={styles.subtitle}>{'$' + formatearMoneda(saldo.toString())}</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={styles.container3}>
                                                 <View style={{
-                                                    display: 'flex',
+                                                    backgroundColor: '#21212121',
                                                     width: '100%',
-                                                    height: '45px',
-                                                    marginTop: 4,
-                                                    borderWidth: '1px',
-                                                    borderColor: 'gray',
+                                                    height: '20px',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
                                                     borderBottomRightRadius: 5,
                                                     borderTopLeftRadius: 5,
                                                     borderBottomLeftRadius: 5,
+
                                                 }}>
-                                                    <View style={{ width: '100%', height: '40px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, alignItems: 'center' }}>
-                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>Fecha de pago</Text>
-                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
+                                                    <Text style={{ fontSize: 10, textAlign: 'center' }}>CONOCE LOS COBROS A DETALLE</Text>
+                                                </View>
+                                                <View style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    width: '100%',
+                                                    justifyContent: 'space-between',
+
+                                                }}>
+                                                    <View style={{ width: '39%', height: 100 }}>
+                                                        <View style={{
+                                                            display: 'flex',
+                                                            width: '100%',
+                                                            height: '100px',
+
+                                                        }}>
+                                                            <View style={{
+                                                                display: 'flex',
+                                                                width: '100%',
+                                                                height: '45px',
+                                                                marginTop: 4,
+                                                                borderWidth: '1px',
+                                                                borderColor: 'gray',
+                                                                borderBottomRightRadius: 5,
+                                                                borderTopLeftRadius: 5,
+                                                                borderBottomLeftRadius: 5,
+                                                            }}>
+                                                                <View style={{
+                                                                    backgroundColor: '#21212121',
+                                                                    display: 'flex', width: '100%',
+                                                                    height: '20px',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center'
+                                                                }}>
+                                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>ULTIMO PAGO</Text>
+
+                                                                </View>
+                                                                <View style={{
+                                                                    width: '100%',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'row',
+                                                                    justifyContent: 'space-between'
+                                                                }}>
+                                                                    <View style={{ width: '65%' }}>
+                                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>Fecha del ultimo pago</Text>
+                                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>{ultimoPago ? new Date(ultimoPago.fechaPago!).toLocaleDateString() : 'N/A'}</Text>
+
+                                                                    </View>
+                                                                    <View style={{
+                                                                        width: '35%',
+                                                                        height: 'auto',
+                                                                        backgroundColor: '#21212121',
+                                                                        display: 'flex',
+                                                                        flexDirection: 'column',
+                                                                        padding: 5
+                                                                    }}>
+                                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>V.PAGADO</Text>
+                                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>{'$' + ultimoPago ? formatearMoneda(ultimoPago ? ultimoPago.montoPagado.toString() : '0') : 'N/A'}</Text>
+                                                                    </View>
+                                                                </View>
+                                                            </View>
+
+                                                            <View style={{
+                                                                display: 'flex',
+                                                                width: '100%',
+                                                                height: '45px',
+                                                                marginTop: 4,
+                                                                borderWidth: '1px',
+                                                                borderColor: 'gray',
+                                                                borderBottomRightRadius: 5,
+                                                                borderTopLeftRadius: 5,
+                                                                borderBottomLeftRadius: 5,
+                                                            }}>
+                                                                <View style={{ width: '100%', height: '40px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, alignItems: 'center' }}>
+                                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>Fecha de pago</Text>
+                                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
+                                                                </View>
+                                                                <View style={{ width: '100%', height: '40px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, alignItems: 'center' }}>
+                                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>Fecha de corte </Text>
+                                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
+                                                                </View>
+                                                            </View>
+                                                        </View>
                                                     </View>
-                                                    <View style={{ width: '100%', height: '40px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, alignItems: 'center' }}>
-                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>Fecha de corte </Text>
-                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
+                                                    <View style={{ width: '59%', height: 100 }}>
+
+                                                        <View style={{
+                                                            display: 'flex',
+                                                            width: '100%',
+                                                            height: '45px',
+                                                            marginTop: 4,
+                                                            borderWidth: '1px',
+                                                            borderColor: 'gray',
+                                                            borderBottomRightRadius: 5,
+                                                            borderTopLeftRadius: 5,
+                                                            borderBottomLeftRadius: 5,
+                                                        }}>
+                                                            <View style={{
+                                                                backgroundColor: '#21212121',
+                                                                display: 'flex', width: '100%',
+                                                                height: '20px',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}>
+                                                                <Text style={{ fontSize: 8, textAlign: 'center', }}>DEUDA ANTERIOR</Text>
+
+                                                            </View>
+                                                            <View style={{
+                                                                width: '100%',
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                justifyContent: 'space-between'
+                                                            }}>
+                                                                <View style={{ width: '75%' }}>
+                                                                    <Text style={{ fontSize: 10, textAlign: 'center', }}>Descripción</Text>
+                                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>Cargos anteriores</Text>
+
+                                                                </View>
+                                                                <View style={{
+                                                                    width: '25%',
+                                                                    height: 'auto',
+                                                                    backgroundColor: '#21212121',
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    padding: 5
+                                                                }}>
+                                                                    <Text style={{ fontSize: 10, textAlign: 'center', }}>VALOR</Text>
+                                                                    <Text style={{ fontSize: 10, textAlign: 'center', }}>{'$' + formatearMoneda((saldo - 15000).toString())}</Text>
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                        <View style={{
+                                                            display: 'flex',
+                                                            width: '100%',
+                                                            height: '45px',
+                                                            marginTop: 4,
+                                                            borderWidth: '1px',
+                                                            borderColor: 'gray',
+                                                            borderBottomRightRadius: 5,
+                                                            borderTopLeftRadius: 5,
+                                                            borderBottomLeftRadius: 5,
+                                                        }}>
+                                                            <View style={{
+                                                                backgroundColor: '#21212121',
+                                                                display: 'flex',
+                                                                width: '100%',
+                                                                height: '20px',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}>
+                                                                <Text style={{ fontSize: 8, textAlign: 'center', }}>CARGOS FIJOS</Text>
+                                                            </View>
+
+                                                            <View style={{
+                                                                width: '100%',
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                justifyContent: 'space-between'
+                                                            }}>
+                                                                <View style={{ width: '75%', display: 'flex', flexDirection: 'column', marginHorizontal: 10 }} >
+
+                                                                    <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>Descripción</Text>
+                                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>Fecha inicial</Text>
+                                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>Fecha final</Text>
+
+                                                                    </View>
+                                                                    <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>Servicio television</Text>
+                                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>{ultimaFactura ? new Date(ultimaFactura.fechaEmision).toLocaleDateString() : 'N/A'}</Text>
+                                                                        <Text style={{ fontSize: 8, textAlign: 'center', }}>{ultimaFactura ? fechaSumada(new Date(ultimaFactura.fechaEmision)) : 'N/A'}</Text>
+
+                                                                    </View>
+                                                                </View>
+                                                                <View style={{ width: '25%', height: 'auto', backgroundColor: '#21212121', display: 'flex', flexDirection: 'column', padding: 5 }}>
+                                                                    <Text style={{ fontSize: 10, textAlign: 'center', }}>VALOR</Text>
+                                                                    <Text style={{ fontSize: 10, textAlign: 'center', }}>{'$' + formatearMoneda('15000')}</Text>
+
+
+                                                                </View>
+                                                            </View>
+                                                        </View>
                                                     </View>
                                                 </View>
                                             </View>
-                                        </View>
-                                        <View style={{ width: '59%', height: 100 }}>
+                                            <View style={styles.container4}>
+                                                <View style={{ display: 'flex', width: '50%', flexDirection: 'column' }}>
+                                                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',gap: 5 }}>
+                                                        <Image src={logo} style={{width: '25px', height: '25px'}} />
+                                                        <Text style={styles.text}>TV CABLE SAN JOSE</Text>
+                                                    </View>
+                                                        <Text style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', fontSize: 10, textAlign: 'center', }}>Tel: 3105922940</Text>
+                                                    <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100px', marginHorizontal: 10 }}>
 
-                                            <View style={{
-                                                display: 'flex',
-                                                width: '100%',
-                                                height: '45px',
-                                                marginTop: 4,
-                                                borderWidth: '1px',
-                                                borderColor: 'gray',
-                                                borderBottomRightRadius: 5,
-                                                borderTopLeftRadius: 5,
-                                                borderBottomLeftRadius: 5,
-                                            }}>
-                                                <View style={{
-                                                    backgroundColor: '#21212121',
-                                                    display: 'flex', width: '100%',
-                                                    height: '20px',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }}>
-                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>DEUDA ANTERIOR</Text>
+                                                        <Image src={barcodeDataUrl} />
 
+                                                    </View>
                                                 </View>
-                                                <View style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between'
-                                                }}>
-                                                    <View style={{ width: '75%' }}>
-                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>Descripción</Text>
-                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>Cargos anteriores</Text>
-
+                                                <View style={{ display: 'flex', width: '40%', flexDirection: 'column' }}>
+                                                    <Text style={styles.text}>{nombre}</Text>
+                                                    <View style={{ display: 'flex', width: '100%', justifyContent: 'space-between', flexDirection: 'row', marginTop: 10, marginBottom: 5 }}>
+                                                        <View style={{ width: '50%', }}><Text style={styles.subtitle}>
+                                                            Dirección:</Text>
+                                                        </View>
+                                                        <View style={{ width: '50%' }}>
+                                                            <Text style={{ fontSize: 10, }}>{direccion}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <View style={{ display: 'flex', width: '100%', justifyContent: 'space-between', flexDirection: 'row', marginBottom: 5 }}>
+                                                        <View style={{ width: '50%' }}><Text style={styles.subtitle}>
+                                                            Teléfono:</Text>
+                                                        </View>
+                                                        <View style={{ width: '50%' }}>
+                                                            <Text style={{ fontSize: 10, }}>{telefono}</Text>
+                                                        </View>
                                                     </View>
                                                     <View style={{
-                                                        width: '25%',
-                                                        height: 'auto',
-                                                        backgroundColor: '#21212121',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        padding: 5
+                                                        borderTopRightRadius: 8, borderTopLeftRadius: 8, color: 'black', padding: 4, borderColor: 'red', borderWidth: '1px',
                                                     }}>
-                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>VALOR</Text>
-                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>{'$' + formatearMoneda((saldo - 15000).toString())}</Text>
+                                                        <Text style={[styles.subtitle,]}>Periodo Facturación: <Text style={{ fontSize: 14, fontWeight: 'medium' }}>{ultimaFactura && new Date(ultimaFactura.fechaEmision).toLocaleDateString('es-Es', {
+                                                            day: 'numeric',
+                                                            month: 'short',
+                                                            year: '2-digit'
+                                                        })}</Text>
+                                                        </Text>
                                                     </View>
+                                                    <View style={{ borderBottomRightRadius: 8, borderBottomLeftRadius: 8, backgroundColor: 'red', color: 'white', padding: 5, alignContent: 'center' }}>
+
+                                                        <Text style={styles.subtitle}>Total a Pagar:
+                                                            <Text style={styles.subtitle}>{' $' + formatearMoneda(saldo.toString())}</Text>
+                                                        </Text>
+                                                    </View>
+
                                                 </View>
                                             </View>
-                                            <View style={{
-                                                display: 'flex',
-                                                width: '100%',
-                                                height: '45px',
-                                                marginTop: 4,
-                                                borderWidth: '1px',
-                                                borderColor: 'gray',
-                                                borderBottomRightRadius: 5,
-                                                borderTopLeftRadius: 5,
-                                                borderBottomLeftRadius: 5,
-                                            }}>
-                                                <View style={{
-                                                    backgroundColor: '#21212121',
-                                                    display: 'flex',
-                                                    width: '100%',
-                                                    height: '20px',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center'
-                                                }}>
-                                                    <Text style={{ fontSize: 8, textAlign: 'center', }}>CARGOS FIJOS</Text>
-                                                </View>
 
-                                                <View style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    flexDirection: 'row',
-                                                    justifyContent: 'space-between'
-                                                }}>
-                                                    <View style={{ width: '75%', display: 'flex', flexDirection: 'column', marginHorizontal:10  }} >
-
-                                                        <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>Descripción</Text>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>Fecha inicial</Text>
-                                                            <Text style={{ fontSize: 10, textAlign: 'center', }}>Fecha final</Text>
-
-                                                        </View>
-                                                        <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                            <Text style={{ fontSize: 8, textAlign: 'center', }}>Servicio television</Text>
-                                                            <Text style={{ fontSize: 8, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
-                                                            <Text style={{ fontSize: 8, textAlign: 'center', }}>{new Date().toLocaleDateString()}</Text>
-
-                                                        </View>
-                                                    </View>
-                                                    <View style={{ width: '25%', height: 'auto', backgroundColor: '#21212121', display: 'flex', flexDirection: 'column', padding: 5 }}>
-                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>VALOR</Text>
-                                                        <Text style={{ fontSize: 10, textAlign: 'center', }}>{'$' + formatearMoneda('15000')}</Text>
-
-
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-                                <View style={styles.container4}>
-                                    <View style={{ display: 'flex', width: '50%', flexDirection: 'column' }}>
-                                        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={styles.text}>TV CABLE SAN JOSE</Text>
-                                        </View>
-                                        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100px', marginHorizontal: 10 }}>
-
-                                            <Image src={barcodeDataUrl} />
 
                                         </View>
-                                    </View>
-                                    <View style={{ display: 'flex', width: '40%', flexDirection: 'column' }}>
-                                        <Text style={styles.text}>{nombre}</Text>
-                                        <View style={{ display: 'flex', width: '100%', justifyContent: 'space-between', flexDirection: 'row', marginTop: 10, marginBottom: 5 }}>
-                                            <View style={{ width: '50%', }}><Text style={styles.subtitle}>
-                                                Dirección:</Text>
-                                            </View>
-                                            <View style={{ width: '50%' }}>
-                                                <Text style={{ fontSize: 10, }}>{direccion}</Text>
-                                            </View>
-                                        </View>
-                                        <View style={{ display: 'flex', width: '100%', justifyContent: 'space-between', flexDirection: 'row', marginBottom: 5 }}>
-                                            <View style={{ width: '50%' }}><Text style={styles.subtitle}>
-                                                Teléfono:</Text>
-                                            </View>
-                                            <View style={{ width: '50%' }}>
-                                                <Text style={{ fontSize: 10, }}>{telefono}</Text>
-                                            </View>
-                                        </View>
-                                        <View style={{
-                                            borderTopRightRadius: 8, borderTopLeftRadius: 8, color: 'black', padding: 4, borderColor: 'red', borderWidth: '1px',
-                                        }}>
-                                            <Text style={[styles.subtitle,]}>Periodo Facturación: <Text style={{ fontSize: 14, fontWeight: 'medium' }}>{formatearFecha2(date.toString())}</Text>
-                                            </Text>
-                                        </View>
-                                        <View style={{ borderBottomRightRadius: 8, borderBottomLeftRadius: 8, backgroundColor: 'red', color: 'white', padding: 5, alignContent: 'center' }}>
+                                    )
+                                }
 
-                                            <Text style={styles.subtitle}>Total a Pagar:
-                                                <Text style={styles.subtitle}>{' $' + formatearMoneda(saldo.toString())}</Text>
-                                            </Text>
-                                        </View>
-
-                                    </View>
-                                </View>
-
-
-                            </View>
+                            </>
                         )
                     })
                 }

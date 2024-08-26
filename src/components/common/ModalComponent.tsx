@@ -1,5 +1,6 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react'
 import React from 'react'
+import { Toaster } from 'sonner'
 
 export enum Size {
   ExtraSmall = "xs",
@@ -33,53 +34,56 @@ export const ModalComponent: React.FC<Props> = ({
 }) => {
 
   return (
-    <Modal
-      backdrop="opaque"
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      radius="lg"
-      size={size}
-      motionProps={{
-        variants: {
-          enter: {
-            y: 0,
-            opacity: 1,
-            transition: {
-              duration: 0.3,
-              ease: "easeOut",
+    <>
+    <Toaster/>
+      <Modal
+        backdrop="opaque"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        radius="lg"
+        size={size}
+        motionProps={{
+          variants: {
+            enter: {
+              y: 0,
+              opacity: 1,
+              transition: {
+                duration: 0.3,
+                ease: "easeOut",
+              },
             },
-          },
-          exit: {
-            y: -20,
-            opacity: 0,
-            transition: {
-              duration: 0.2,
-              ease: "easeIn",
+            exit: {
+              y: -20,
+              opacity: 0,
+              transition: {
+                duration: 0.2,
+                ease: "easeIn",
+              },
             },
-          },
-        }
-      }}
+          }
+        }}
 
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1"> {title}</ModalHeader>
-            <ModalBody>
-              {children}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1"> {title}</ModalHeader>
+              <ModalBody>
+                {children}
 
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Cerrar
-              </Button>
-              <Button type='submit' className="bg-foreground text-background" onPress={btnFn}>
-                {btnText}
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Cerrar
+                </Button>
+                <Button type='submit' className="bg-foreground text-background" onPress={btnFn}>
+                  {btnText}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   )
 }

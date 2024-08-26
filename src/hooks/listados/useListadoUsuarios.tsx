@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { listadoBetania, listadoSanjose } from "../services/actions.listado"
+import { listadoBetania, listadoSanjose } from "../../services/actions.listado"
 
 
 export const useListadoSanjose = () => {

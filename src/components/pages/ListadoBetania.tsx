@@ -1,5 +1,5 @@
 
-import { useListadoBetania } from '../../hooks/useListadoUsuarios'
+import { useListadoBetania } from '../../hooks/listados/useListadoUsuarios'
 import Loading from '../common/Loading'
 import {  PDFViewer } from '@react-pdf/renderer'
 import GenerarListado from '../common/GenerarListado'

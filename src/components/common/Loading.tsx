@@ -1,7 +1,7 @@
 const Loading = () => {
     return (
-        <div className='w-full h-screen flex justify-center items-center'>
-            <i className="pi pi-spin pi-spinner-dotted" style={{ fontSize: '2rem' }}></i>
+        <div className='w-full h-[80vh] flex justify-center items-center'>
+            <div className="loader"></div>
         </div>
     )
 }

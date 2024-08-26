@@ -30,7 +30,7 @@ const Registrar: React.FC<Props> = ({ control, onSubmit }) => {
                         <Controller
                             control={control}
                             name='nombre'
-                            rules={{ required: true }}
+                            rules={{ required: true, }}
                             render={({ field }) => (
                                 <Input
                                     {...field}
@@ -89,6 +89,7 @@ const Registrar: React.FC<Props> = ({ control, onSubmit }) => {
                         />
 
                     </div>
+                    
                 </div>
 
 
@@ -97,7 +98,7 @@ const Registrar: React.FC<Props> = ({ control, onSubmit }) => {
                         <Controller
                             control={control}
                             name='telefono'
-                            rules={{ required: true }}
+                            rules={{ required: true, maxLength: 10, minLength: 10 }}
                             render={({ field }) => (
                                 <Input
                                     {...field}
@@ -114,9 +115,6 @@ const Registrar: React.FC<Props> = ({ control, onSubmit }) => {
 
                     </div>
                 </div>
-
-
-
             </form>
 
         </div>
