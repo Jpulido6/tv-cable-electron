@@ -10,8 +10,8 @@ export const usePagosMutation = () => {
         onSuccess:()=> {
             toast.success('Pago Realizado ☑️')
         },
-        onError: (error: Error) => {
-            toast.error(error.message)
+        onError: () => {
+            toast.error('Pago no realizado ❌')
         }
     })
 

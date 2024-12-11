@@ -1,34 +1,37 @@
 import { useQuery } from "@tanstack/react-query"
-import {     
-    obtenerUsuarios, 
-    obtenerUsuariosConFactura, 
-    verUsuarioId 
+import {
+    // obtenerUsuarios,
+    obtenerUsuariosConFactura,
+    verUsuarioId
 } from "../../services/actions.usuarios"
 import { DatosResponse } from "../../components/common/GenerarFacturas"
+import { CustomerProxy } from "@/v2/pages/private/home/infraestructure/repositories/customer.proxy"
 
 
-export const useUsuarios = () =>{    
+export const useUsuarios = () => {
+    const customer = new CustomerProxy()
 
     const usuariosQuery = useQuery({
         queryKey: ['usuarios'],
-        queryFn: obtenerUsuarios        
+        // queryFn: obtenerUsuarios
+        queryFn: customer.getUser
     })
 
     return usuariosQuery
-    
+
 }
-export const useUsuariosConFactura = () =>{    
+export const useUsuariosConFactura = () => {
 
     const usuariosConFacturaQuery = useQuery<DatosResponse[]>({
         queryKey: ['usuariosConFactura'],
-        queryFn: obtenerUsuariosConFactura       
+        queryFn: obtenerUsuariosConFactura
     })
 
-    return usuariosConFacturaQuery  
-    
+    return usuariosConFacturaQuery
+
 }
 
-export const useUsuarioById = ( id: number )=>{
+export const useUsuarioById = (id: number) => {
 
     const usuarioQuery = useQuery({
         queryKey: ['usuario', id],

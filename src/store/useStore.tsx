@@ -1,8 +1,9 @@
+import { RoleUser } from "@/pages/public/auth/domain/user/user.interface"
 import { create } from "zustand"
 
 interface Store {
     userName: string
-    roleUSer: string
+    roleUSer: RoleUser
     addName: (name: string) => void
     addRole: (role: string) => void
 }
@@ -10,12 +11,12 @@ interface Store {
 
 export const useStoreApp = create<Store>((set) => ({
     userName: "",
-    roleUSer: "",
+    roleUSer: RoleUser.USER,
     addName(name) {
         set({ userName: name })
     },
-    addRole(role) {
-        set({ roleUSer: role })
+    addRole() {
+        set({ roleUSer: RoleUser.ADMIN  })
     },
 
 }))

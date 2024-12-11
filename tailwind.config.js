@@ -12,18 +12,26 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily:{
-        'poppins': ['Poppins', 'sans-serif'],
-        'poppins-bold': ['Poppins-Bold', 'sans-serif'],
-        'poppins-medium': ['Poppins-Medium', 'sans-serif'],
-        'poppins-regular': ['Poppins-Regular', 'sans-serif'],
-        'poppins-light': ['Poppins-Light', 'sans-serif'],
-        'poppins-thin': ['Poppins-Thin', 'sans-serif']    
-      
-      }
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+        "poppins-bold": ["Poppins-Bold", "sans-serif"],
+        "poppins-medium": ["Poppins-Medium", "sans-serif"],
+        "poppins-regular": ["Poppins-Regular", "sans-serif"],
+        "poppins-light": ["Poppins-Light", "sans-serif"],
+        "poppins-thin": ["Poppins-Thin", "sans-serif"],
+      },
+      animation: {
+        "fadeInOut": "1.5s easy-in-out infinite",
+      },
+      keyframes: {
+        "fadeInOut": {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 0 },
+          "50%": { opacity: 1 },
+        },
+      },
     },
   },
   darkMode: "class",
   plugins: [nextui()],
 };
-

@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@public/*": ["./src/pages/public*"],
+      "@private/*": ["./src/pages/private/*"]
+    },
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",

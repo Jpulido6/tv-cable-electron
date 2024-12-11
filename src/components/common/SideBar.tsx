@@ -229,7 +229,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LinkProps } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 
-interface Links {
+export interface Links {
     label: string;
     href: string;
     icon: React.JSX.Element | React.ReactNode;
